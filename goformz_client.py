@@ -8,7 +8,7 @@ class GoFormzClient:
     def __init__(self, client_id: str, client_secret: str):
         self.client_id = client_id
         self.client_secret = client_secret
-        self.base_url = "https://api.goformz.com/v1"
+        self.base_url = "https://api.goformz.com/api/v1"
         self.access_token = None
         
     def _get_access_token(self) -> str:
@@ -16,7 +16,7 @@ class GoFormzClient:
         if self.access_token:
             return self.access_token
             
-        token_url = f"{self.base_url}/oauth2/token"
+        token_url = f"{self.base_url}/oauth/token"
         data = {
             'grant_type': 'client_credentials',
             'client_id': self.client_id,
