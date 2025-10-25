@@ -1,0 +1,54 @@
+name: Deploy to Heroku
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    
+    - name: Install Playwright
+      run: |
+        playwright install
+    
+    - name: Run tests
+      run: |
+        python test_setup.py
+      env:
+        GOFORMZ_CLIENT_ID: ${{ secrets.GOFORMZ_CLIENT_ID }}
+        GOFORMZ_CLIENT_SECRET: ${{ secrets.GOFORMZ_CLIENT_SECRET }}
+        SHIFTCARE_USERNAME: ${{ secrets.SHIFTCARE_USERNAME }}
+        SHIFTCARE_PASSWORD: ${{ secrets.SHIFTCARE_PASSWORD }}
+
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Deploy to Heroku
+      uses: akhileshns/heroku-deploy@v3.12.12
+      with:
+        heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
+        heroku_app_name: ${{ secrets.HEROKU_APP_NAME }}
+        heroku_email: ${{ secrets.HEROKU_EMAIL }}
+        appdir: "."
+        buildpack: "https://github.com/jontewks/puppeteer-heroku-buildpack.git"
