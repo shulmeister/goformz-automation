@@ -16,7 +16,7 @@ class GoFormzClient:
         if self.access_token:
             return self.access_token
             
-        token_url = f"{self.base_url}/oauth/token"
+        token_url = f"{self.base_url}/oauth2/token"
         data = {
             'grant_type': 'client_credentials',
             'client_id': self.client_id,

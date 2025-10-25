@@ -28,6 +28,18 @@ shiftcare_automation = ShiftcareAutomation(
 
 pdf_parser = PDFParser()
 
+@app.route('/', methods=['GET'])
+def home():
+    return jsonify({
+        "message": "GoFormz-Shiftcare Integration API",
+        "version": "1.0.0",
+        "endpoints": {
+            "health": "/health",
+            "forms": "/forms",
+            "process_packets": "/process-packets"
+        }
+    })
+
 @app.route('/health', methods=['GET'])
 def health_check():
     return jsonify({"status": "healthy"})
