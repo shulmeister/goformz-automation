@@ -12,9 +12,27 @@ class GoFormzClient:
         self.access_token = None
         
     def _get_access_token(self) -> str:
-        """Get API access token - using client_id as API key for v2"""
-        # For GoFormz v2 API, the client_id is used as the API key
-        return self.client_id
+        """Get OAuth2 access token"""
+        if self.access_token:
+            return self.access_token
+            
+        token_url = "https://accounts.goformz.com/connect/token"
+        data = {
+            'grant_type': 'client_credentials',
+            'client_id': self.client_id,
+            'client_secret': self.client_secret,
+            'scope': 'public_api'
+        }
+        
+        try:
+            response = requests.post(token_url, data=data)
+            response.raise_for_status()
+            token_data = response.json()
+            self.access_token = token_data['access_token']
+            return self.access_token
+        except requests.exceptions.RequestException as e:
+            logger.error(f"Failed to get access token: {e}")
+            raise
     
     def _make_request(self, method: str, endpoint: str, **kwargs) -> requests.Response:
         """Make authenticated request to GoFormz API"""
