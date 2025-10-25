@@ -25,7 +25,10 @@ class GoFormzClient:
         }
         
         try:
-            response = requests.post(token_url, data=data)
+            headers = {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
+            response = requests.post(token_url, data=data, headers=headers)
             response.raise_for_status()
             token_data = response.json()
             self.access_token = token_data['access_token']
